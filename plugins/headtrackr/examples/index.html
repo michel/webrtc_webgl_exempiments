@@ -1,0 +1,70 @@
+<!doctype html><title>Minimal tQuery Page</title>
+<script src="../../../build/tquery-bundle-require.js"></script>
+<script src="../vendor/headtrackr.js"></script>
+<script src="../tquery.headtrackr.js"></script>
+<body><script>
+	// init the world
+	var world	= tQuery.createWorld().boilerplate().start();
+	world.removeCameraControls();
+  window.w = world;
+	// create the headTracker
+  var headTracker	= tQuery.createHeadtrackr().start();
+  headTracker.debugView(false);
+
+  window.h = headTracker;
+
+	// add a cube in the world scene
+	var cube2	= tQuery.createCube().addTo(world);
+  loader = new THREE.JSONLoader();
+  loader.load('blackhat.js', function(geo) {
+     var material = new THREE.MeshLambertMaterial({
+      colorAmbient: [0.480000026226044, 0.480000026226044, 0.480000026226044],
+      colorDiffuse: [0.480000026226044, 0.480000026226044, 0.480000026226044],
+      colorSpecular: [0.8999999761581421, 0.8999999761581421, 0.8999999761581421]
+     });
+     var mesh = new THREE.Mesh(
+       geo,
+       material
+       );
+    hat = mash;
+    world.add(mesh);
+    });
+
+	// make the camera move depending on facetrackingEvent
+      video = headTracker._videoInput;
+      var videoTexture = new THREE.Texture(headTracker._videoInput);
+     var backgroundMesh = new THREE.Mesh(
+                new THREE.PlaneGeometry(2, 2, 0),
+                new THREE.MeshBasicMaterial({
+                    map: videoTexture
+                }));
+
+          backgroundMesh .material.depthTest = false;
+          backgroundMesh .material.depthWrite = false;
+
+            // Create your background scene
+            var backgroundScene = new THREE.Scene();
+            var backgroundCamera = new THREE.Camera();
+            backgroundScene .add(backgroundCamera );
+            backgroundScene .add(backgroundMesh );
+
+            world.add(backgroundScene);
+            world.add(backgroundCamera);
+          	headTracker.addEventListener("found", function(event){
+
+      if( video.readyState === video.HAVE_ENOUGH_DATA ){
+        videoTexture.needsUpdate = true;
+      }
+        cube2.rotationZ(event.angle)
+          .positionY(event.height)
+          .scaleX(event.width).scaleY(event.height / 2);
+      });
+
+	// reset headTracker if space is pressed
+	document.addEventListener('keydown', function(event){
+		// only if the key is space
+		if( event.keyCode !== ' '.charCodeAt(0) )	return;
+		// reset the head tracker
+		headTracker.reset();
+	});
+</script></body>
